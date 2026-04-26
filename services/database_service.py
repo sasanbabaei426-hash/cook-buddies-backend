@@ -5,14 +5,10 @@ import psycopg2
 # CONNECTION
 # ----------------------------------------
 
+import os
+
 def get_connection():
-    return psycopg2.connect(
-        dbname="cook_buddies",
-        user="postgres",
-        password="1234",
-        host="localhost",
-        port="5432"
-    )
+    return psycopg2.connect(os.environ.get("DATABASE_URL"))
 
 
 # ----------------------------------------
