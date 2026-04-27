@@ -1,11 +1,10 @@
 import psycopg2
-
+import os
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # ----------------------------------------
 # CONNECTION
 # ----------------------------------------
-
-import os
 
 def get_connection():
     return psycopg2.connect(os.environ.get("DATABASE_URL"))
@@ -111,10 +110,13 @@ def create_user(data):
     conn = get_connection()
     cursor = conn.cursor()
 
+    hashed_password = generate_password_hash(data.get("password"))
+
     cursor.execute("""
         INSERT INTO users (
             name,
             email,
+            password,
             student_id,
             university,
             photo_url,
@@ -126,11 +128,12 @@ def create_user(data):
             social_score,
             trust_score
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING id;
     """, (
         data.get("name"),
         data.get("email"),
+        hashed_password,
         data.get("student_id"),
         data.get("university", "University of Pécs"),
         data.get("photo_url"),
